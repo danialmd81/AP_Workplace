@@ -33,7 +33,7 @@ private slots:
     void discardSocket();
     void displayError(QAbstractSocket::SocketError socketError);
     void displayMessage(const QString &str);
-    void on_sendButton_clicked();
+    void on_sendButton_clicked(QString str = "");
 
 private:
     Ui::Client *ui;

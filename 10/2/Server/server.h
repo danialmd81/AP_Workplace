@@ -9,6 +9,7 @@
 #include <QStandardPaths>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <thread>
 
 namespace Ui
 {
@@ -46,6 +47,8 @@ private slots:
 
 private:
     Ui::Server *ui;
+    QSet<std::thread *> thread_set;
+    std::thread *thr;
     QTcpServer *server;
     QSet<QTcpSocket *> socket_set;
 };

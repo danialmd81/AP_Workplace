@@ -42,6 +42,7 @@ void Client::readSocket()
     }
     buffer = buffer.mid(128);
     QString message = QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString::fromStdString(buffer.toStdString()));
+    // on_sendButton_clicked("message recived."); //for thread testing uncomment this.
     emit newMessage(message);
 }
 
@@ -71,13 +72,13 @@ void Client::displayError(QAbstractSocket::SocketError socketError)
     }
 }
 
-void Client::on_sendButton_clicked()
+void Client::on_sendButton_clicked(QString str)
 {
     if (socket)
     {
         if (socket->isOpen())
         {
-            QString str = ui->messageEdit->text();
+            str += ui->messageEdit->text();
             QDataStream socketStream(socket);
             QByteArray header;
             header.prepend(QString("fileType:message,fileName:null,fileSize:%1;").arg(str.size()).toUtf8());

@@ -8,6 +8,7 @@ Server::Server(QWidget *parent) : QMainWindow(parent), ui(new Ui::Server)
 
     if (server->listen(QHostAddress::Any, 8080))
     {
+
         connect(server, &QTcpServer::newConnection, this, &Server::newConnection);
         connect(this, &Server::newMessage, this, &Server::displayMessage);
         ui->statusbar->showMessage("Server is listening...");
@@ -26,7 +27,10 @@ Server::~Server()
         socket->close();
         socket->deleteLater();
     }
-
+    foreach (std::thread *thr_p, thread_set)
+    {
+        delete thr_p;
+    }
     server->close();
     server->deleteLater();
 
@@ -36,7 +40,13 @@ Server::~Server()
 void Server::newConnection()
 {
     while (server->hasPendingConnections())
-        appendToSocketList(server->nextPendingConnection());
+    {
+         thr = new std::thread([&]()
+           { appendToSocketList(server->nextPendingConnection()); });
+         thr->join();
+         thread_set.insert(thr);
+//        appendToSocketList(server->nextPendingConnection());
+    }
 }
 
 void Server::appendToSocketList(QTcpSocket *socket)
