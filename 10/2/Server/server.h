@@ -1,8 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include <QDebug>
+#include <QMainWindow>
 #include <QMessageBox>
 #include <QMetaType>
 #include <QSet>
@@ -10,24 +10,25 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <thread>
+#include <unordered_set>
 
 namespace Ui
 {
-    class Server;
+class Server;
 }
 
 class Server : public QMainWindow
 {
     Q_OBJECT
 
-public:
+  public:
     explicit Server(QWidget *parent = nullptr);
     ~Server();
 
-signals:
+  signals:
     void newMessage(QString);
 
-private slots:
+  private slots:
     void newConnection();
     void appendToSocketList(QTcpSocket *socket);
 
@@ -45,7 +46,7 @@ private slots:
 
     void on_sendButton_clicked();
 
-private:
+  private:
     Ui::Server *ui;
     QSet<std::thread *> thread_set;
     std::thread *thr;

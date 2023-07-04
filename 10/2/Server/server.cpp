@@ -8,14 +8,14 @@ Server::Server(QWidget *parent) : QMainWindow(parent), ui(new Ui::Server)
 
     if (server->listen(QHostAddress::Any, 8080))
     {
-
         connect(server, &QTcpServer::newConnection, this, &Server::newConnection);
         connect(this, &Server::newMessage, this, &Server::displayMessage);
         ui->statusbar->showMessage("Server is listening...");
     }
     else
     {
-        QMessageBox::critical(this, "QTCPServer", QString("Unable to start the server: %1.").arg(server->errorString()));
+        QMessageBox::critical(this, "QTCPServer",
+                              QString("Unable to start the server: %1.").arg(server->errorString()));
         exit(EXIT_FAILURE);
     }
 }
@@ -41,11 +41,10 @@ void Server::newConnection()
 {
     while (server->hasPendingConnections())
     {
-         thr = new std::thread([&]()
-           { appendToSocketList(server->nextPendingConnection()); });
-         thr->join();
-         thread_set.insert(thr);
-//        appendToSocketList(server->nextPendingConnection());
+        thr = new std::thread([&]() { appendToSocketList(server->nextPendingConnection()); });
+        thr->join();
+        thread_set.insert(thr);
+        //        appendToSocketList(server->nextPendingConnection());
     }
 }
 
@@ -56,7 +55,8 @@ void Server::appendToSocketList(QTcpSocket *socket)
     connect(socket, &QTcpSocket::disconnected, this, &Server::discardSocket);
     connect(socket, SIGNAL(QTcpSocket::error(QAbstractSocket::SocketError)), this, SLOT(MainWindow::displayError));
     ui->sendBox->addItem(QString::number(socket->socketDescriptor()));
-    displayMessage(QString("INFO :: Client with socket id:%1 has just entered the room").arg(socket->socketDescriptor()));
+    displayMessage(
+        QString("INFO :: Client with socket id:%1 has just entered the room").arg(socket->socketDescriptor()));
 }
 
 void Server::readSocket()
@@ -73,7 +73,8 @@ void Server::readSocket()
         return;
     }
     buffer = buffer.mid(128);
-    QString message = QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString::fromStdString(buffer.toStdString()));
+    QString message =
+        QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString::fromStdString(buffer.toStdString()));
     sendMessage(socket, "message recived.");
     emit newMessage(message);
 }
@@ -99,14 +100,18 @@ void Server::displayError(QAbstractSocket::SocketError socketError)
     case QAbstractSocket::RemoteHostClosedError:
         break;
     case QAbstractSocket::HostNotFoundError:
-        QMessageBox::information(this, "QTCPServer", "The host was not found. Please check the host name and port settings.");
+        QMessageBox::information(this, "QTCPServer",
+                                 "The host was not found. Please check the host name and port settings.");
         break;
     case QAbstractSocket::ConnectionRefusedError:
-        QMessageBox::information(this, "QTCPServer", "The connection was refused by the peer. Make sure QTCPServer is running, and check that the host name and port settings are correct.");
+        QMessageBox::information(this, "QTCPServer",
+                                 "The connection was refused by the peer. Make sure QTCPServer is running, and check "
+                                 "that the host name and port settings are correct.");
         break;
     default:
         QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
-        QMessageBox::information(this, "QTCPServer", QString("The following error occurred: %1.").arg(socket->errorString()));
+        QMessageBox::information(this, "QTCPServer",
+                                 QString("The following error occurred: %1.").arg(socket->errorString()));
         break;
     }
 }

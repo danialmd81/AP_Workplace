@@ -16,7 +16,8 @@ Client::Client(QWidget *parent) : QMainWindow(parent), ui(new Ui::Client)
         ui->statusbar->showMessage("Connected to Server");
     else
     {
-        QMessageBox::critical(this, "QTCPClient", QString("The following error occurred: %1.").arg(socket->errorString()));
+        QMessageBox::critical(this, "QTCPClient",
+                              QString("The following error occurred: %1.").arg(socket->errorString()));
         exit(EXIT_FAILURE);
     }
 }
@@ -41,7 +42,8 @@ void Client::readSocket()
         return;
     }
     buffer = buffer.mid(128);
-    QString message = QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString::fromStdString(buffer.toStdString()));
+    QString message =
+        QString("%1 :: %2").arg(socket->socketDescriptor()).arg(QString::fromStdString(buffer.toStdString()));
     // on_sendButton_clicked("message recived."); //for thread testing uncomment this.
     emit newMessage(message);
 }
@@ -61,13 +63,17 @@ void Client::displayError(QAbstractSocket::SocketError socketError)
     case QAbstractSocket::RemoteHostClosedError:
         break;
     case QAbstractSocket::HostNotFoundError:
-        QMessageBox::information(this, "QTCPClient", "The host was not found. Please check the host name and port settings.");
+        QMessageBox::information(this, "QTCPClient",
+                                 "The host was not found. Please check the host name and port settings.");
         break;
     case QAbstractSocket::ConnectionRefusedError:
-        QMessageBox::information(this, "QTCPClient", "The connection was refused by the peer. Make sure QTCPServer is running, and check that the host name and port settings are correct.");
+        QMessageBox::information(this, "QTCPClient",
+                                 "The connection was refused by the peer. Make sure QTCPServer is running, and check "
+                                 "that the host name and port settings are correct.");
         break;
     default:
-        QMessageBox::information(this, "QTCPClient", QString("The following error occurred: %1.").arg(socket->errorString()));
+        QMessageBox::information(this, "QTCPClient",
+                                 QString("The following error occurred: %1.").arg(socket->errorString()));
         break;
     }
 }
